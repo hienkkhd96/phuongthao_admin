@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Attendance {
+  id               Int      @id @default(autoincrement())
+  created          DateTime @default(now())
+  attendance_date  DateTime @default(now())
+  attendane_status Boolean  @default(false)
+  lesson           Int      @default(1)
+  class            Int
+  student          Int
+  Classes          Classes  @relation(fields: [class], references: [id])
+  Students         Students @relation(fields: [student], references: [id])
+
+  @@index([class], map: "Attendance_class_fkey")
+  @@index([student], map: "Attendance_student_fkey")
+}
+
+model Blogs {
+  id        Int      @id @default(autoincrement())
+  created   DateTime @default(now())
+  create_by Int      
+  title     String   @db.VarChar(255)
+  desc      String   @db.VarChar(255)
+  content   String
+  poster    String
+  Users     Users    @relation(fields: [create_by], references: [id])
+}
+
+model Class_Student {
+  created  DateTime @default(now())
+  class    Int
+  student  Int
+  Classes  Classes  @relation(fields: [class], references: [id])
+  Students Students @relation(fields: [student], references: [id])
+
+  @@id([class, student])
+  @@index([student], map: "Class_Student_student_fkey")
+}
+
+model Classes {
+  id             Int             @id @default(autoincrement())
+  created        DateTime        @default(now())
+  create_by      Int      
+  class_name     String?         @db.VarChar(40) @unique
+  opening_day    DateTime        @db.Date
+  closing_day    DateTime        @db.Date
+  tottal_lesson  Int?
+  lesson_perweek Int?
+  day_of_week    String?
+  max_studens    Int?
+  Users          Users           @relation(fields: [create_by], references: [id])
+  Attendance     Attendance[]
+  Class_Student  Class_Student[]
+}
+
+model Students {
+  id            Int             @id @default(autoincrement())
+  created       DateTime        @default(now())
+  create_by     Int           
+  address       String?         @db.VarChar(255)
+  birthday      DateTime?       @db.Date
+  email         String          @db.VarChar(20) @unique
+  mobile        String?         @db.VarChar(20) @unique
+  name          String?         @db.VarChar(40)
+  work          String          @db.VarChar(100)
+  Users         Users           @relation(fields: [create_by], references: [id])
+  Attendance    Attendance[]
+  Class_Student Class_Student[]
+}
+
+model Tags {
+  id        Int      @id @default(autoincrement())
+  created   DateTime @default(now())
+  create_by Int      
+  title     String   @db.VarChar(255)
+  desc      String   @db.VarChar(255)
+  Users     Users    @relation(fields: [create_by], references: [id])
+}
+
+model Users {
+  id        Int             @id @default(autoincrement()) 
+  username  String          @unique
+  password  String          @db.VarChar(255)
+  email     String?         @db.VarChar(255) @unique
+  name      String?         @db.VarChar(40) 
+  mobile    String?         @db.VarChar(20) @unique
+  permisson Users_permisson @default(staff)
+  created   DateTime        @default(now())
+  Blogs     Blogs[]
+  Classes   Classes[]
+  Students  Students[]
+  Tags      Tags[]
+}
+
+enum Users_permisson {
+  admin
+  staff
+}
