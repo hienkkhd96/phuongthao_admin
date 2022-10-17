@@ -10,7 +10,7 @@ import { fetcher } from "../../axios/fetchSwr";
 
 export const CustomerListResults = ({ ...rest }) => {
   const router = useRouter();
-  const { data, error } = useSWR("customers", fetcher, { refreshInterval: 500 });
+  const { data, error } = useSWR("customers", fetcher);
   const customers = data;
   if (!!error) {
     router.push("/404");
@@ -144,6 +144,11 @@ export const CustomerListResults = ({ ...rest }) => {
       .then((res) => {
         toast.success("Cập nhật khách hàng thành công");
       })
+      .then(() => {
+        setTimeout(() => {
+          mutate("customers");
+        }, 800);
+      })
       .catch((err) => {
         toast.error("Cập nhật khách hàng thất bại. Vui lòng thử lại");
       });
@@ -189,6 +194,11 @@ export const CustomerListResults = ({ ...rest }) => {
               .updateCustomer(data)
               .then((res) => {
                 toast.success("Cập nhật khách hàng thành công");
+              })
+              .then(() => {
+                setTimeout(() => {
+                  mutate("customers");
+                }, 800);
               })
               .catch((err) => {
                 console.log(err);
