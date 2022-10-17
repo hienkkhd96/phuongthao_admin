@@ -2,6 +2,7 @@ import prisma from "../../../lib/pisma";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
+    console.log(123);
     const query = req.query || null;
     const customers = await prisma.customers.findMany({
       where: { ...query, is_removed: false },

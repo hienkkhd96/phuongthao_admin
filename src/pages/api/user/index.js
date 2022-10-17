@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     const query = req.query || null;
     const users = await prisma.users.findMany({
-      where: query,
+      where: { ...query, is_removed: false },
     });
     res.status(200).send(users);
     return;
@@ -47,8 +47,8 @@ export default async function handler(req, res) {
     // permisson:admin/staff defautl:staff
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-    if(hash) {
-      const hasedData = {...body,password:hash}
+    if (hash) {
+      const hasedData = { ...body, password: hash };
       const data = await prisma.users.create({
         data: hasedData,
       });

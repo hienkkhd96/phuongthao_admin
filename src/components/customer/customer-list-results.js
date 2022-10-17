@@ -1,16 +1,24 @@
-import {
-  Card, FormControl, MenuItem,
-  Select
-} from "@mui/material";
+import { Card, FormControl, MenuItem, Select } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { useRouter } from "next/router";
 import Moment from "react-moment";
 import { toast } from "react-toastify";
-import { useSWRConfig } from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import customersApi from "../../axios/customersApi";
 import { validateEmail } from "../../utils";
+import { fetcher } from "../../axios/fetchSwr";
 
-export const CustomerListResults = ({ customers, ...rest }) => {
-  const { mutate } = useSWRConfig()
+export const CustomerListResults = ({ ...rest }) => {
+  const router = useRouter();
+  const { data, error } = useSWR("customers", fetcher, { refreshInterval: 500 });
+  const customers = data;
+  if (!!error) {
+    router.push("/404");
+  }
+  const { mutate } = useSWRConfig();
+  if (!data) {
+    return <div>Loading</div>;
+  }
   const indexCustomer = [...customers].map((item, index) => {
     return { ...item, stt: index + 1 };
   });
@@ -131,17 +139,14 @@ export const CustomerListResults = ({ customers, ...rest }) => {
       id: params.row.id,
       [params.field]: e.target.value,
     };
-    if (params.value != e.target.value) {
-      customersApi
-        .updateCustomer(data)
-        .then((res) => {
-          toast.success("Cập nhật khách hàng thành công");
-          mutate('api/customers')
-        })
-        .catch((err) => {
-          toast.error("Cập nhật khách hàng thất bại. Vui lòng thử lại");
-        });
-    }
+    customersApi
+      .updateCustomer(data)
+      .then((res) => {
+        toast.success("Cập nhật khách hàng thành công");
+      })
+      .catch((err) => {
+        toast.error("Cập nhật khách hàng thất bại. Vui lòng thử lại");
+      });
   };
   return (
     <Card
@@ -184,7 +189,6 @@ export const CustomerListResults = ({ customers, ...rest }) => {
               .updateCustomer(data)
               .then((res) => {
                 toast.success("Cập nhật khách hàng thành công");
-                mutate('api/customers')
               })
               .catch((err) => {
                 console.log(err);

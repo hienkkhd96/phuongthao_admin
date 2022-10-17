@@ -13,12 +13,17 @@ import { Upload as UploadIcon } from "../../icons/upload";
 import { Download as DownloadIcon } from "../../icons/download";
 import CreateCustomerModal from "./CreateCustomerModal";
 import { useState } from "react";
+import ImportExcellModal from "./ImportExcellModal";
 
 export const CustomerListToolbar = (props) => {
   const [openCreateCustomers, setOpenCreateCustomers] = useState(false);
+  const [openImportExcell, setOpenImportExcell] = useState(false);
 
   const handleOpenCreate = () => {
     setOpenCreateCustomers(!openCreateCustomers);
+  };
+  const handleOpenImportExcell = () => {
+    setOpenImportExcell(!openImportExcell);
   };
 
   return (
@@ -36,7 +41,7 @@ export const CustomerListToolbar = (props) => {
           Customers
         </Typography>
         <Box sx={{ m: 1 }}>
-          <Button startIcon={<UploadIcon fontSize="small" />} sx={{ mr: 1 }}>
+          <Button startIcon={<UploadIcon fontSize="small" />} sx={{ mr: 1 }} onClick={handleOpenImportExcell}>
             Import
           </Button>
           <Button startIcon={<DownloadIcon fontSize="small" />} sx={{ mr: 1 }}>
@@ -70,6 +75,7 @@ export const CustomerListToolbar = (props) => {
         </Card>
       </Box>
       <CreateCustomerModal open={openCreateCustomers} handleClose={handleOpenCreate} />
+      <ImportExcellModal open={openImportExcell} handleClose={handleOpenImportExcell} />
     </Box>
   );
 };
