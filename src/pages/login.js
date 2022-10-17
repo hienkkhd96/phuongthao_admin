@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import Head from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
 import authApi from "../axios/auth";
 import { useAuthContext } from "../contexts/auth-context";
@@ -33,17 +34,25 @@ const Login = (props) => {
     }),
     onSubmit: async (value) => {
       try {
-        const user = await authApi.login(value);
-        console.log(user);
+        const { data } = await authApi.login(value);
+        const { token } = data;
+        const user = {
+          id: data.user.id,
+          username: data.user.username,
+          name: data.user.name,
+          permisson: data.user.permisson,
+        };
+        signIn({ user, token });
+        toast.success("Đăng nhập thành công");
       } catch (err) {
-        console.log(err);
+        toast.error(err.response.data);
       }
     },
   });
-  // if (isAuthenticated) {
-  //   router.push("/")
-  //   return
-  // }
+  if (isAuthenticated) {
+    router.push("/");
+    return;
+  }
   return (
     <>
       <Head>

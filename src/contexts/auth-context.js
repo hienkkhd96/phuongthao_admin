@@ -1,21 +1,22 @@
 import { createContext, useContext, useEffect, useReducer, useRef } from "react";
 import PropTypes from "prop-types";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 const HANDLERS = {
   INITIALIZE: "INITIALIZE",
   SIGN_IN: "SIGN_IN",
   SIGN_OUT: "SIGN_OUT",
 };
-let isAuthenticated = false
-let user = null
-if (typeof window !== 'undefined') {
-  isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"))||false
-  user = JSON.parse(localStorage.getItem("user"))||null
+let isAuthenticated = false;
+let user = {};
+if (typeof window !== "undefined") {
+  isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated")) || false;
+  user = JSON.parse(localStorage.getItem("user")) || {};
 }
 const initialState = {
   isAuthenticated: isAuthenticated,
   isLoading: true,
   user: user,
+  token: "",
 };
 
 const handlers = {
@@ -36,9 +37,10 @@ const handlers = {
     };
   },
   [HANDLERS.SIGN_IN]: (state, action) => {
-    const user = action.payload;
-    localStorage.setItem("isAuthenticated",true)
-    localStorage.setItem("user",JSON.stringify(user))
+    const { user, token } = action.payload;
+    localStorage.setItem("isAuthenticated", true);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", JSON.stringify(token));
     return {
       ...state,
       isAuthenticated: true,
@@ -46,10 +48,13 @@ const handlers = {
     };
   },
   [HANDLERS.SIGN_OUT]: (state) => {
+    localStorage.setItem("isAuthenticated", false);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     return {
       ...state,
       isAuthenticated: false,
-      user: null,
+      user: {},
     };
   },
 };
@@ -73,7 +78,7 @@ export const AuthProvider = (props) => {
     initialized.current = true;
     try {
       // Get user from your database
-      const user = JSON.parse(localStorage.getItem("user"))||{};
+      const user = JSON.parse(localStorage.getItem("user")) || {};
       dispatch({
         type: HANDLERS.INITIALIZE,
         payload: user,
@@ -110,7 +115,7 @@ export const AuthProvider = (props) => {
         signIn,
         signOut,
       }}
-    > 
+    >
       {children}
       <ToastContainer />
     </AuthContext.Provider>

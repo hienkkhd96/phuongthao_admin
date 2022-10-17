@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { Box, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useEffect } from "react";
+import { useAuthContext } from "../contexts/auth-context";
 import { ChartBar as ChartBarIcon } from "../icons/chart-bar";
 import { Cog as CogIcon } from "../icons/cog";
 import { Lock as LockIcon } from "../icons/lock";
@@ -42,24 +42,11 @@ const items = [
     icon: <CogIcon fontSize="small" />,
     title: "Settings",
   },
-  {
-    href: "/login",
-    icon: <LockIcon fontSize="small" />,
-    title: "Login",
-  },
-  {
-    href: "/register",
-    icon: <UserAddIcon fontSize="small" />,
-    title: "Register",
-  },
-  {
-    href: "/404",
-    icon: <XCircleIcon fontSize="small" />,
-    title: "Error",
-  },
+  
 ];
 
 export const DashboardSidebar = (props) => {
+  const { user } = useAuthContext();
   const { open, onClose } = props;
   const router = useRouter();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"), {
@@ -118,10 +105,10 @@ export const DashboardSidebar = (props) => {
             >
               <div>
                 <Typography color="inherit" variant="subtitle1">
-                  Acme Inc
+                  {user.name}
                 </Typography>
                 <Typography color="neutral.400" variant="body2">
-                  Your tier : Premium
+                  Your tier : {user.permisson?.toUpperCase()}
                 </Typography>
               </div>
               <SelectorIcon
@@ -142,12 +129,10 @@ export const DashboardSidebar = (props) => {
         />
         <Box sx={{ flexGrow: 1 }}>
           {items.map((item) => (
-            <NavItem key={item.title} icon={item.icon}
-href={item.href} title={item.title} />
+            <NavItem key={item.title} icon={item.icon} href={item.href} title={item.title} />
           ))}
         </Box>
         <Divider sx={{ borderColor: "#2D3748" }} />
-        
       </Box>
     </>
   );
