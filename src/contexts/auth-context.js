@@ -16,7 +16,6 @@ const initialState = {
   isAuthenticated: isAuthenticated,
   isLoading: true,
   user: user,
-  token: "",
 };
 
 const handlers = {
@@ -40,7 +39,6 @@ const handlers = {
     const { user, token } = action.payload;
     localStorage.setItem("isAuthenticated", true);
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", JSON.stringify(token));
     return {
       ...state,
       isAuthenticated: true,
@@ -48,9 +46,8 @@ const handlers = {
     };
   },
   [HANDLERS.SIGN_OUT]: (state) => {
-    localStorage.setItem("isAuthenticated", false);
+    localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
     return {
       ...state,
       isAuthenticated: false,

@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import * as jose from "jose";
+import Cookies from "cookies";
 import prisma from "../../lib/pisma";
 
 const secret = process.env.SECRET || "ttphuongthao";
@@ -26,6 +27,8 @@ export default async function handler(req, res) {
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
             .sign(new TextEncoder().encode(secret));
+          let cookies = new Cookies(req, res);
+          cookies.set("token", token, { httpOnly: true });
           res.status(200).send({ user, token });
           return;
         }

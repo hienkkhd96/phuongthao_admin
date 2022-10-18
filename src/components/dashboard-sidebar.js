@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -6,13 +7,10 @@ import { useEffect } from "react";
 import { useAuthContext } from "../contexts/auth-context";
 import { ChartBar as ChartBarIcon } from "../icons/chart-bar";
 import { Cog as CogIcon } from "../icons/cog";
-import { Lock as LockIcon } from "../icons/lock";
 import { Selector as SelectorIcon } from "../icons/selector";
 import { ShoppingBag as ShoppingBagIcon } from "../icons/shopping-bag";
 import { User as UserIcon } from "../icons/user";
-import { UserAdd as UserAddIcon } from "../icons/user-add";
 import { Users as UsersIcon } from "../icons/users";
-import { XCircle as XCircleIcon } from "../icons/x-circle";
 import { Logo } from "./logo";
 import { NavItem } from "./nav-item";
 
@@ -42,7 +40,6 @@ const items = [
     icon: <CogIcon fontSize="small" />,
     title: "Settings",
   },
-  
 ];
 
 export const DashboardSidebar = (props) => {
@@ -53,20 +50,6 @@ export const DashboardSidebar = (props) => {
     defaultMatches: true,
     noSsr: false,
   });
-
-  useEffect(
-    () => {
-      if (!router.isReady) {
-        return;
-      }
-
-      if (open) {
-        onClose?.();
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [router.asPath]
-  );
 
   const content = (
     <>
@@ -98,17 +81,32 @@ export const DashboardSidebar = (props) => {
                 cursor: "pointer",
                 display: "flex",
                 justifyContent: "space-between",
-                px: 3,
+                px: open ?? 3,
                 py: "11px",
                 borderRadius: 1,
+                width: open ?? 10,
               }}
             >
               <div>
-                <Typography color="inherit" variant="subtitle1">
+                <Typography
+                  color="inherit"
+                  variant="subtitle1"
+                  sx={{
+                    display: open ? "flex" : "none",
+                  }}
+                >
                   {user.name}
                 </Typography>
                 <Typography color="neutral.400" variant="body2">
-                  Your tier : {user.permisson?.toUpperCase()}
+                  <span
+                    style={{
+                      display: open ? "inline" : "none",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Your tier :
+                  </span>
+                  {user.permisson?.toUpperCase()}
                 </Typography>
               </div>
               <SelectorIcon
@@ -116,6 +114,7 @@ export const DashboardSidebar = (props) => {
                   color: "neutral.500",
                   width: 14,
                   height: 14,
+                  display: open ? "flex" : "none",
                 }}
               />
             </Box>
@@ -129,7 +128,7 @@ export const DashboardSidebar = (props) => {
         />
         <Box sx={{ flexGrow: 1 }}>
           {items.map((item) => (
-            <NavItem key={item.title} icon={item.icon} href={item.href} title={item.title} />
+            <NavItem key={item.title} icon={item.icon} href={item.href} title={item.title} open={open} />
           ))}
         </Box>
         <Divider sx={{ borderColor: "#2D3748" }} />
@@ -146,7 +145,7 @@ export const DashboardSidebar = (props) => {
           sx: {
             backgroundColor: "neutral.900",
             color: "#FFFFFF",
-            width: 280,
+            width: open ? 280 : 100,
           },
         }}
         variant="permanent"
@@ -158,7 +157,7 @@ export const DashboardSidebar = (props) => {
 
   return (
     <Drawer
-      anchor="left"
+      anchor="right"
       onClose={onClose}
       open={open}
       PaperProps={{
