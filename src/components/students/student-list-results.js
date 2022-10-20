@@ -17,7 +17,7 @@ import customersApi from "../../axios/customersApi";
 import { fetcher } from "../../axios/fetchSwr";
 import { validateEmail } from "../../utils";
 
-export const CustomerListResults = ({ ...rest }) => {
+export const StudentListResults = ({ ...rest }) => {
   const router = useRouter();
   const { data, error } = useSWR("customers", fetcher);
   let rowsSelected = [];

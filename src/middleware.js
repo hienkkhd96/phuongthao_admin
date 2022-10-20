@@ -4,18 +4,21 @@ const secret = process.env.SECRET || "ttphuongthao";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request) {
-  if (request.url.includes("api/login") || request.url.includes("api/authFailed")) {
+  if (
+    request.url.includes("login") ||
+    request.url.includes("authFailed") ||
+    (request.url.includes("user") && request.method == "POST") ||
+    request.url.includes("404") ||
+    request.url.includes("register")
+  ) {
     return NextResponse.next();
   }
   const isValid = await checkJwtIsValid(request);
   if (isValid) {
     return NextResponse.next();
   } else {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("isAuthenticated", "false");
-    }
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/api/authFailed";
     return NextResponse.rewrite(url);
   }
 }

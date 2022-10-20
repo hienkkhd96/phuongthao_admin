@@ -1,14 +1,14 @@
 import { Box, Container } from "@mui/material";
 import Head from "next/head";
-import { CustomerListResults } from "../components/customer/customer-list-results";
-import { CustomerListToolbar } from "../components/customer/customer-list-toolbar";
+import { StudentListResults } from "../components/students/student-list-results";
+import { StudentListToolbar } from "../components/students/students-list-toolbar";
 import { DashboardLayout } from "../components/dashboard-layout";
 
 const Page = () => {
   return (
     <>
       <Head>
-        <title>Customers | Trung tâm Phương Thảo</title>
+        <title>Students | Trung tâm Phương Thảo</title>
       </Head>
       <Box
         component="main"
@@ -18,9 +18,9 @@ const Page = () => {
         }}
       >
         <Container maxWidth={false}>
-          <CustomerListToolbar />
+          <StudentListToolbar />
           <Box sx={{ mt: 3 }}>
-            <CustomerListResults />
+            <StudentListResults />
           </Box>
         </Container>
       </Box>

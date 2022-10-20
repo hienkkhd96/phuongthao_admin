@@ -11,16 +11,16 @@ import {
 import { Search as SearchIcon } from "../../icons/search";
 import { Upload as UploadIcon } from "../../icons/upload";
 import { Download as DownloadIcon } from "../../icons/download";
-import CreateCustomerModal from "./CreateCustomerModal";
+import CreateStudentModal from "./CreateStudentModal";
 import { useState } from "react";
 import ImportExcellModal from "./ImportExcellModal";
 
-export const CustomerListToolbar = (props) => {
-  const [openCreateCustomers, setOpenCreateCustomers] = useState(false);
+export const StudentListToolbar = (props) => {
+  const [openCreateStudents, setOpenCreateStudents] = useState(false);
   const [openImportExcell, setOpenImportExcell] = useState(false);
 
   const handleOpenCreate = () => {
-    setOpenCreateCustomers(!openCreateCustomers);
+    setOpenCreateStudents(!openCreateStudents);
   };
   const handleOpenImportExcell = () => {
     setOpenImportExcell(!openImportExcell);
@@ -38,7 +38,7 @@ export const CustomerListToolbar = (props) => {
         }}
       >
         <Typography sx={{ m: 1 }} variant="h4">
-          Customers
+          Students
         </Typography>
         <Box sx={{ m: 1 }}>
           <Button
@@ -52,7 +52,7 @@ export const CustomerListToolbar = (props) => {
             Export
           </Button>
           <Button color="primary" variant="contained" onClick={handleOpenCreate}>
-            Add Customers
+            Thêm học sinh
           </Button>
         </Box>
       </Box>
@@ -61,13 +61,13 @@ export const CustomerListToolbar = (props) => {
           <CardContent>
             <Box >
               <Typography fontSize={25} textAlign="center" fontWeight='bold'>
-                Quản lý khách hàng
+                Quản lý học sinh
               </Typography>
             </Box>
           </CardContent>
         </Card>
       </Box>
-      <CreateCustomerModal open={openCreateCustomers} handleClose={handleOpenCreate} />
+      <CreateStudentModal open={openCreateStudents} handleClose={handleOpenCreate} />
       <ImportExcellModal open={openImportExcell} handleClose={handleOpenImportExcell} />
     </Box>
   );

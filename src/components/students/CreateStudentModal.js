@@ -10,6 +10,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { DatePicker, DesktopDatePicker } from "@mui/x-date-pickers";
 import { useFormik } from "formik";
 import PropTypes from "prop-types";
 import React from "react";
@@ -29,24 +30,32 @@ function CreateCustomerModal(props) {
       name: "",
       email: "",
       mobile: "",
-      course: "",
-      stage: "unpaid",
+      birthday: new Date(),
+      address: "",
+      work: "",
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .min(2, "Tên khách hàng phải nhiều hơn 2 ký tự")
-        .max(30, "Tên khách hàng không được lớn hơn 30 ký tự")
-        .required("Bạn chưa nhập tên khách hàng"),
+        .min(2, "Tên học viên phải nhiều hơn 2 ký tự")
+        .max(30, "Tên học viên không được lớn hơn 30 ký tự")
+        .required("Bạn chưa nhập tên học viên"),
       email: Yup.string().email("Email không đúng định dạng").required("Bạn chưa nhập email"),
       mobile: Yup.string().matches(regexPhone, "Số điện thoại không hợp lệ"),
-      course: Yup.string().min(2, "Khóa học không hợp lệ"),
-      stage: Yup.string().required("Bạn chưa nhập trạng thái thanh toán"),
+      birthday: Yup.date()
+        .min("1960/01/01", "Ngày sinh không hợp lệ")
+        .max(new Date(), "Ngày sinh không hợp lệ"),
+      address: Yup.string()
+        .min(4, "Địa chỉ học viên phải nhiều hơn 4 ký tự")
+        .max(30, "Địa chỉ học viên không được lớn hơn 40 ký tự"),
+      work: Yup.string()
+        .min(4, "Việc làm của học viên phải nhiều hơn 4 ký tự")
+        .max(30, "Việc làm của học viên không được lớn hơn 40 ký tự"),
     }),
     onSubmit: async (value) => {
       const data = { ...value, create_by: user.id };
       try {
         const res = await customersApi.createCustomer(data);
-        toast.success("Thêm khách hàng thành công");
+        toast.success("Thêm học viên thành công");
         handleClose();
         setTimeout(() => {
           mutate("customers");
@@ -58,7 +67,7 @@ function CreateCustomerModal(props) {
   });
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Thêm khách hàng</DialogTitle>
+      <DialogTitle>Thêm học sinh</DialogTitle>
       <DialogContent>
         <Box>
           <form onSubmit={formik.handleSubmit}>
@@ -66,7 +75,7 @@ function CreateCustomerModal(props) {
               error={Boolean(formik.touched.name && formik.errors.name)}
               fullWidth
               helperText={formik.touched.name && formik.errors.name}
-              label="Tên khách hàng"
+              label="Tên học sinh"
               margin="normal"
               name="name"
               onBlur={formik.handleBlur}
@@ -101,35 +110,13 @@ function CreateCustomerModal(props) {
               value={formik.values.mobile}
               variant="outlined"
             />
-            <TextField
-              error={Boolean(formik.touched.course && formik.errors.course)}
-              fullWidth
-              helperText={formik.touched.course && formik.errors.course}
-              label="Khóa học quan tâm"
-              margin="normal"
-              name="course"
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              type="text"
-              value={formik.values.course}
-              variant="outlined"
+            <DatePicker
+              label="Basic example"
+              value={formik.values.birthday}
+              name="birthday"
+              onChange=={formik.handleChange}
+              renderInput={(params) => <TextField  {...params} />}
             />
-            <FormControl sx={{ mt: 2, minWidth: "100%" }}>
-              <InputLabel id="select-helper-label">Trạng thái thanh toán</InputLabel>
-              <Select
-                labelId="select-label"
-                id="select"
-                name="stage"
-                onBlur={formik.handleBlur}
-                value={formik.values.stage}
-                onChange={formik.handleChange}
-                label="Trạng thái thanh toán"
-              >
-                <MenuItem value={"unpaid"}>Chưa thanh toán</MenuItem>
-                <MenuItem value={"paid"}>Đã thanh toán</MenuItem>
-                <MenuItem value={"joined"}>Đã vào lớp</MenuItem>
-              </Select>
-            </FormControl>
             <Box sx={{ py: 2 }}>
               <Button
                 color="primary"

@@ -13,6 +13,10 @@ const customersApi = {
     const url = `customers`;
     return axiosClient.put(url, data);
   },
+  deleteCustomer(data) {
+    const url = `customers/delete-many`;
+    return axiosClient.post(url, data);
+  },
 };
 
 export default customersApi;

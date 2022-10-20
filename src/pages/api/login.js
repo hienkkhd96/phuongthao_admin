@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import * as jose from "jose";
 import Cookies from "cookies";
 import prisma from "../../lib/pisma";
+import { NextResponse } from "next/server";
 
 const secret = process.env.SECRET || "ttphuongthao";
 export default async function handler(req, res) {
