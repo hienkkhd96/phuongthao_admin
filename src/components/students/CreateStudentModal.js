@@ -3,14 +3,9 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
+  DialogTitle, TextField
 } from "@mui/material";
-import { DatePicker, DesktopDatePicker } from "@mui/x-date-pickers";
+import { DesktopDatePicker, DesktopDateTimePicker } from "@mui/x-date-pickers";
 import { useFormik } from "formik";
 import PropTypes from "prop-types";
 import React from "react";
@@ -18,6 +13,7 @@ import { toast } from "react-toastify";
 import { mutate } from "swr";
 import * as Yup from "yup";
 import customersApi from "../../axios/customersApi";
+import studentsApi from "../../axios/studentsApi";
 import { useAuthContext } from "../../contexts/auth-context";
 
 function CreateCustomerModal(props) {
@@ -30,7 +26,7 @@ function CreateCustomerModal(props) {
       name: "",
       email: "",
       mobile: "",
-      birthday: new Date(),
+      birthday: "",
       address: "",
       work: "",
     },
@@ -41,8 +37,7 @@ function CreateCustomerModal(props) {
         .required("Bạn chưa nhập tên học viên"),
       email: Yup.string().email("Email không đúng định dạng").required("Bạn chưa nhập email"),
       mobile: Yup.string().matches(regexPhone, "Số điện thoại không hợp lệ"),
-      birthday: Yup.date()
-        .min("1960/01/01", "Ngày sinh không hợp lệ")
+      birthday: Yup.date().min("01/01/1960", "Ngày sinh không hợp lệ")
         .max(new Date(), "Ngày sinh không hợp lệ"),
       address: Yup.string()
         .min(4, "Địa chỉ học viên phải nhiều hơn 4 ký tự")
@@ -53,8 +48,9 @@ function CreateCustomerModal(props) {
     }),
     onSubmit: async (value) => {
       const data = { ...value, create_by: user.id };
-      try {
-        const res = await customersApi.createCustomer(data);
+      console.log(data);
+      try { 
+        const res = await studentsApi.createStudent(data)
         toast.success("Thêm học viên thành công");
         handleClose();
         setTimeout(() => {
@@ -110,12 +106,53 @@ function CreateCustomerModal(props) {
               value={formik.values.mobile}
               variant="outlined"
             />
-            <DatePicker
-              label="Basic example"
-              value={formik.values.birthday}
+            <DesktopDatePicker
+              label="Ngày sinh của học viên"
+              inputFormat="dd/MM/yyyy"
+              error={Boolean(formik.touched.birthday && formik.errors.birthday)}
+              helperText={formik.touched.birthday && formik.errors.birthday}
+
               name="birthday"
-              onChange=={formik.handleChange}
-              renderInput={(params) => <TextField  {...params} />}
+              onChange={(value) => {
+                formik.setFieldValue("birthday", value)
+              }}
+              value={formik.values.birthday}
+              renderInput={(params) => <TextField
+                type="date"
+                error={Boolean(formik.touched.birthday && formik.errors.birthday)}
+                fullWidth
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                variant="outlined"
+                helperText={formik.touched.birthday && formik.errors.birthday}
+                margin="normal"
+                {...params} />}
+            />
+            <TextField
+              error={Boolean(formik.touched.address && formik.errors.address)}
+              fullWidth
+              helperText={formik.touched.address && formik.errors.address}
+              label="Địa chỉ của học sinh"
+              margin="normal"
+              name="address"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="text"
+              value={formik.values.address}
+              variant="outlined"
+            />
+            <TextField
+              error={Boolean(formik.touched.work && formik.errors.work)}
+              fullWidth
+              helperText={formik.touched.work && formik.errors.work}
+              label="Công việc hiện tại"
+              margin="normal"
+              name="work"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="text"
+              value={formik.values.work}
+              variant="outlined"
             />
             <Box sx={{ py: 2 }}>
               <Button

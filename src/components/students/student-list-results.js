@@ -13,15 +13,15 @@ import { useRouter } from "next/router";
 import Moment from "react-moment";
 import { toast } from "react-toastify";
 import useSWR, { useSWRConfig } from "swr";
-import customersApi from "../../axios/customersApi";
 import { fetcher } from "../../axios/fetchSwr";
+import studentsApi from "../../axios/studentsApi";
 import { validateEmail } from "../../utils";
 
 export const StudentListResults = ({ ...rest }) => {
   const router = useRouter();
-  const { data, error } = useSWR("customers", fetcher);
+  const { data, error } = useSWR("students", fetcher);
   let rowsSelected = [];
-  const customers = data;
+  const students = data;
   if (!!error) {
     router.push("/404");
   }
@@ -29,26 +29,20 @@ export const StudentListResults = ({ ...rest }) => {
   if (!data) {
     return <div>Loading</div>;
   }
-  const indexCustomer = [...customers].map((item, index) => {
+  const indexStudent = [...students].map((item, index) => {
     return { ...item, stt: index + 1 };
   });
-  const stageChoices = {
-    paid: "Đã thanh toán",
-    unpaid: "Chưa thanh toán",
-    joined: "Đã vào lớp",
-  };
-
   const columns = [
     {
       field: "stt",
-      headerName: "STT",
+      headerName: "#",
       type: "number",
-      width: 40,
+      width: 20,
       editable: false,
     },
     {
       field: "name",
-      headerName: "Tên khách hàng",
+      headerName: "Tên học viên",
       width: 250,
       editable: true,
       preProcessEditCellProps: (params) => {
@@ -60,7 +54,7 @@ export const StudentListResults = ({ ...rest }) => {
       field: "email",
       editable: true,
       width: 250,
-      headerName: "Email khách hàng",
+      headerName: "Email học viên",
       preProcessEditCellProps: (params) => {
         const isValid = validateEmail(params.props.value);
         if (isValid) {
@@ -69,69 +63,29 @@ export const StudentListResults = ({ ...rest }) => {
       },
     },
     {
-      field: "course",
-      editable: true,
-      width: 200,
-      headerName: "Khóa học quan tâm",
-    },
-    {
       field: "mobile",
       editable: true,
       width: 120,
       headerName: "Số điện thoại",
+    },  
+    {
+      field: "birthday",
+      type: "date",
+      editable: true,
+      width: 120,
+      headerName: "Ngày sinh",
     },
     {
-      field: "stage",
+      field: "address",
       editable: true,
       width: 200,
-      headerName: "Trạng thái thanh toán",
-      valueFormatter: (params) => {
-        return stageChoices[params.value];
-      },
-      renderEditCell: (params) => {
-        return (
-          <FormControl fullWidth>
-            <Select
-              labelId="stage-select-label"
-              id="stage-select"
-              defaultValue={params.row.stage}
-              label="Trạng thái"
-              name="stage"
-              onChange={(e) => handleOnStageChange(params, e)}
-            >
-              <MenuItem value="unpaid">Chưa thanh toán</MenuItem>
-              <MenuItem value="paid">Đã thanh toán</MenuItem>
-              <MenuItem value="joined">Đã vào lớp</MenuItem>
-            </Select>
-          </FormControl>
-        );
-      },
+      headerName: "Địa chỉ",
     },
     {
-      field: "is_student",
+      field: "work",
       editable: true,
-      headerName: "Đã là học viên chưa",
       width: 200,
-      valueFormatter: (params) => {
-        return params.value ? "Đã từng là học viên" : "Chưa từng là học viên";
-      },
-      renderEditCell: (params) => {
-        return (
-          <FormControl fullWidth>
-            <Select
-              labelId="is-student-select-label"
-              id="is-student-select"
-              defaultValue={params.row.is_student}
-              label="Từng là học viên chưa"
-              name="is_student"
-              onChange={(e) => handleOnStageChange(params, e)}
-            >
-              <MenuItem value={false}>Chưa từng là học viên</MenuItem>
-              <MenuItem value={true}>Đã từng là học viên</MenuItem>
-            </Select>
-          </FormControl>
-        );
-      },
+      headerName: "Công việc hiện tại",
     },
     {
       field: "created",
@@ -149,18 +103,18 @@ export const StudentListResults = ({ ...rest }) => {
       id: params.row.id,
       [params.field]: e.target.value,
     };
-    customersApi
-      .updateCustomer(data)
+    studentsApi
+      .updateStudent(data)
       .then((res) => {
-        toast.success("Cập nhật khách hàng thành công");
+        toast.success("Cập nhật học viên thành công");
       })
       .then(() => {
         setTimeout(() => {
-          mutate("customers");
+          mutate("students");
         }, 2000);
       })
       .catch((err) => {
-        toast.error("Cập nhật khách hàng thất bại. Vui lòng thử lại");
+        toast.error("Cập nhật học viên thất bại. Vui lòng thử lại");
       });
   };
   const handleEditStop = (params, event) => {
@@ -169,33 +123,32 @@ export const StudentListResults = ({ ...rest }) => {
       [params.field]: event.target?.value || params.value,
     };
     if (data[params.field] != params.value) {
-      customersApi
-        .updateCustomer(data)
+      studentsApi
+        .updateStudent(data)
         .then((res) => {
-          toast.success("Cập nhật khách hàng thành công");
+          toast.success("Cập nhật học viên thành công");
         })
         .then(() => {
           setTimeout(() => {
-            mutate("customers");
+            mutate("students");
           }, 2000);
         })
         .catch((err) => {
           console.log(err);
-          toast.error("Cập nhật khách hàng thất bại. Vui lòng thử lại");
+          toast.error("Cập nhật học viên thất bại. Vui lòng thử lại");
         });
     }
   };
   const handleOnDeleteClick = () => {
     if (rowsSelected.length > 0) {
-      console.log(rowsSelected);
-      customersApi
-        .deleteCustomer({ idList: rowsSelected })
+      studentsApi
+        .deleteStudents({ idList: rowsSelected })
         .then((res) => {
-          toast.success(`Đã xóa ${res.data.count} khách hàng`);
+          toast.success(`Đã xóa ${res.data.count} học viên`);
         })
         .then(() => {
           setTimeout(() => {
-            mutate("customers");
+            mutate("students");
           }, 2000);
         })
         .catch((err) => {
@@ -212,7 +165,7 @@ export const StudentListResults = ({ ...rest }) => {
         }}
       >
         <Box>
-          <Tooltip title="Xóa khách hàng đã chọn">
+          <Tooltip title="Xóa học viên đã chọn">
             <Button
               sx={{
                 marginRight: "16px",
@@ -262,7 +215,7 @@ export const StudentListResults = ({ ...rest }) => {
       }}
     >
       <DataGrid
-        rows={indexCustomer}
+        rows={indexStudent}
         columns={columns}
         checkboxSelection
         disableSelectionOnClick

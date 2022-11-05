@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { ClassRounded } from "@mui/icons-material";
 import { Box, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -31,9 +32,9 @@ const items = [
     title: "Students",
   },
   {
-    href: "/account",
-    icon: <UserIcon fontSize="small" />,
-    title: "Account",
+    href: "/classes",
+    icon: <ClassRounded fontSize="small" />,
+    title: "Classes",
   },
   {
     href: "/settings",
